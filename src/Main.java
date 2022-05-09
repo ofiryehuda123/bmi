@@ -4,7 +4,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class Main extends JFrame {
     private JPanel mainPanel;
@@ -19,61 +20,83 @@ public class Main extends JFrame {
     private JRadioButton mediumRadioButton;
     private JRadioButton largeRadioButton;
     private JSlider jslider;
+    private JTextField tfIdealWeight;
+    private JTextField tfWeight;
     private JLabel JLabel;
 
+    public static void main(String[] args) {
+        Main myFrame = new Main();
+    }
 
     public Main() {
         setContentPane(mainPanel);
         setTitle("BMI calculator");
-        setSize(450, 300);
+        setSize(900, 800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
 
-        jslider.setPreferredSize(new Dimension(400,200));
-        jslider.setPaintTicks(true);
-        jslider.setMinorTickSpacing(10);
-        jslider.setPaintTrack(true);
-        jslider.setMajorTickSpacing(25);
-        jslider.setPaintLabels(true);
-        jslider.setFont(new Font("MV Boli",Font.PLAIN,15));
-        jslider.setOrientation(SwingConstants.VERTICAL);
+
+
+        //CLEAR
         clearButton.addActionListener(new ActionListener() {
-
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 tfLastName.setText(null);
                 tfFirstName.setText(null);
                 tfAge.setText(null);
+                tfWeight.setText(null);
+                jslider.setValue(140);
+                if (femaleCheckBox.isSelected()){
+                    femaleCheckBox.setSelected(false);
+                    maleCheckBox.setEnabled(true);
+                } else {
+                    maleCheckBox.setSelected(false);
+                    femaleCheckBox.setEnabled(true);
+                }
             }
         });
 
-        jslider.addComponentListener(new ComponentAdapter() {
+
+
+        maleCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (maleCheckBox.isSelected()){
+                    femaleCheckBox.setEnabled(false);
+                }
+            }
         });
+
+        femaleCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(femaleCheckBox.isSelected()) {
+                    maleCheckBox.setEnabled(false);
+                }
+            }
+        });
+
 
         jslider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+
             }
         });
     }
 
-    public static void main(String[] args) {
-        Main myFrame = new Main();
 
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
