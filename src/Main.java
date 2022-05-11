@@ -1,11 +1,8 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 
 public class Main extends JFrame {
@@ -15,8 +12,6 @@ public class Main extends JFrame {
     private JTextField tfAge;
     private JButton clearButton;
     private JButton submitButton;
-    private JCheckBox maleCheckBox;
-    private JCheckBox femaleCheckBox;
     private JRadioButton smallRadioButton;
     private JRadioButton mediumRadioButton;
     private JRadioButton largeRadioButton;
@@ -25,22 +20,36 @@ public class Main extends JFrame {
     private JTextField tfWeight;
     private JLabel bmiLabel;
     private JLabel idealWeight;
+    private JRadioButton maleRadioButton;
+    private JRadioButton femaleRadioButton;
+    private JLabel LastName;
     private JLabel JLabel;
     private double slimness;
+    private ButtonGroup buttonGroupGender = new ButtonGroup();
+    private ButtonGroup buttonGroup = new ButtonGroup();
 
     public static void main(String[] args) {
-        Main myFrame = new Main();
+        try {
+            Main myFrame = new Main();
+            myFrame.setResizable(false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public Main() {
         setContentPane(mainPanel);
         setTitle("BMI calculator");
-        setSize(900, 800);
+        setSize(1000  , 400);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
+        buttonGroupGender.add(maleRadioButton);
+        buttonGroupGender.add(femaleRadioButton);
+        buttonGroup.add(smallRadioButton);
+        buttonGroup.add(mediumRadioButton);
+        buttonGroup.add(largeRadioButton);
 
-
-        //צריך מחיקה למבנה גוף
         //CLEAR
         clearButton.addActionListener(new ActionListener() {
             @Override
@@ -50,31 +59,8 @@ public class Main extends JFrame {
                 tfAge.setText(null);
                 tfWeight.setText(null);
                 jslider.setValue(140);
-                if (femaleCheckBox.isSelected()){
-                    femaleCheckBox.setSelected(false);
-                    maleCheckBox.setEnabled(true);
-                } else {
-                    maleCheckBox.setSelected(false);
-                    femaleCheckBox.setEnabled(true);
-                }
-            }
-        });
-
-        maleCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (maleCheckBox.isSelected()){
-                    femaleCheckBox.setEnabled(false);
-                }
-            }
-        });
-
-        femaleCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if(femaleCheckBox.isSelected()) {
-                    maleCheckBox.setEnabled(false);
-                }
+                buttonGroupGender.clearSelection();
+                buttonGroup.clearSelection();
             }
         });
 
@@ -84,8 +70,6 @@ public class Main extends JFrame {
                 System.out.println(jslider.getValue());
             }
         });
-
-
 
         submitButton.addActionListener(new ActionListener() {
             @Override
@@ -99,7 +83,6 @@ public class Main extends JFrame {
                     ;
             }
         });
-
 
         ActionListener listener = new ActionListener() {
             @Override
@@ -115,9 +98,16 @@ public class Main extends JFrame {
                 }
                 }
         };
+
         smallRadioButton.addActionListener(listener);
         largeRadioButton.addActionListener(listener);
         mediumRadioButton.addActionListener(listener);
+        femaleRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 
     private String setBmiStatusLabel(double userBmi){
@@ -138,7 +128,6 @@ public class Main extends JFrame {
 
         return userWeightStatus;
     }
-
 
     private double calculateIdealWeight(double userHeight,double userAge,double slimness){
         return (userHeight-100+(userAge/10))*0.9*slimness;
