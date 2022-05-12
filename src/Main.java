@@ -80,6 +80,7 @@ public class Main extends JFrame {
                 bmiLabel.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
                 double finalIdealWeight = calculateIdealWeight(jslider.getValue(),Double.parseDouble(tfAge.getText()), slimness);
                 idealWeight.setText(String.valueOf(finalIdealWeight));
+                    ;
             }
         });
 
