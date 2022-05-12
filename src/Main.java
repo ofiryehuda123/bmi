@@ -87,7 +87,7 @@ public class Main extends JFrame {
         jsliderHeight.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                heightLabel.setText("your height " + jsliderHeight.getValue() );
+                heightLabel.setText("your height : " + jsliderHeight.getValue() );
             }
         });
 
