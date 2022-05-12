@@ -35,7 +35,6 @@ public class Main extends JFrame {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     public Main() {
@@ -80,7 +79,6 @@ public class Main extends JFrame {
                 bmiLabel.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
                 double finalIdealWeight = calculateIdealWeight(jslider.getValue(),Double.parseDouble(tfAge.getText()), slimness);
                 idealWeight.setText(String.valueOf(finalIdealWeight));
-                    ;
             }
         });
 
@@ -98,16 +96,6 @@ public class Main extends JFrame {
                 }
                 }
         };
-
-        smallRadioButton.addActionListener(listener);
-        largeRadioButton.addActionListener(listener);
-        mediumRadioButton.addActionListener(listener);
-        femaleRadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
     }
 
     private String setBmiStatusLabel(double userBmi){
@@ -125,13 +113,10 @@ public class Main extends JFrame {
         }else {
             userWeightStatus="Extreme Obese";
         }
-
         return userWeightStatus;
     }
 
     private double calculateIdealWeight(double userHeight,double userAge,double slimness){
         return (userHeight-100+(userAge/10))*0.9*slimness;
-
     }
-
 }
