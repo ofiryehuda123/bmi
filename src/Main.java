@@ -7,26 +7,47 @@ import java.text.DecimalFormat;
 
 public class Main extends JFrame {
     private JPanel mainPanel;
-    private JTextField tfFirstName;
-    private JTextField tfLastName;
-    private JTextField tfAge;
+    private JTextField textFirstName;
+    private JTextField textLastName;
+    private JTextField textAge;
     private JButton clearButton;
     private JButton submitButton;
     private JRadioButton smallRadioButton;
     private JRadioButton mediumRadioButton;
     private JRadioButton largeRadioButton;
-    private JSlider jslider;
+    private JSlider jsliderHeight;
     private JTextField tfIdealWeight;
-    private JTextField tfWeight;
-    private JLabel bmiLabel;
-    private JLabel idealWeight;
+    private JTextField textWeight;
+    private JLabel labelBmiResult;
+    private JLabel IdealWeightResult;
     private JRadioButton maleRadioButton;
     private JRadioButton femaleRadioButton;
     private JLabel LastName;
+    private JLabel heightLabel;
+    private JLabel firstName;
+    private JLabel age;
+    private JLabel gender;
+    private JLabel bmiLabel;
+    private JLabel idealWeightLabel;
+    private JLabel titleLabel1;
+    private JLabel titleLabel2;
+    private JLabel bodyLabel;
+    private JLabel weightLabel;
     private JLabel JLabel;
     private double slimness;
     private ButtonGroup buttonGroupGender = new ButtonGroup();
     private ButtonGroup buttonGroup = new ButtonGroup();
+
+    //final
+    public static final int ANOREXIC=15;
+    public static final double UNDER_WEIGHT=18.5;
+    public static final double NORMAL=24.9;
+    public static final double OVER_WEIGHT=29.9;
+    public static final int OBESE=30;
+    public static final int EXTRA_OBESE=35;
+    public static final double SMALL_SLIMNESS=0.9;
+    public static final int MEDIUM_SLIMNESS=1;
+    public static final double LARGE_SLIMNESS=1.1;
 
     public static void main(String[] args) {
         try {
@@ -35,13 +56,12 @@ public class Main extends JFrame {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     public Main() {
         setContentPane(mainPanel);
         setTitle("BMI calculator");
-        setSize(1000  , 400);
+        setSize(1000  , 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         buttonGroupGender.add(maleRadioButton);
@@ -50,24 +70,24 @@ public class Main extends JFrame {
         buttonGroup.add(mediumRadioButton);
         buttonGroup.add(largeRadioButton);
 
-        //CLEAR
+        //clear
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tfLastName.setText(null);
-                tfFirstName.setText(null);
-                tfAge.setText(null);
-                tfWeight.setText(null);
-                jslider.setValue(140);
+                textLastName.setText(null);
+                textFirstName.setText(null);
+                textAge.setText(null);
+                textWeight.setText(null);
+                jsliderHeight.setValue(140);
                 buttonGroupGender.clearSelection();
                 buttonGroup.clearSelection();
             }
         });
 
-        jslider.addChangeListener(new ChangeListener() {
+        jsliderHeight.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                System.out.println(jslider.getValue());
+                heightLabel.setText("your height " + jsliderHeight.getValue() );
             }
         });
 
@@ -76,25 +96,23 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 DecimalFormat df = new DecimalFormat();
                 df.setMaximumFractionDigits(3);
-                double finalBmi= Double.parseDouble(tfWeight.getText() ) * 100 * 100 / (jslider.getValue() * jslider.getValue());
-                bmiLabel.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
-                double finalIdealWeight = calculateIdealWeight(jslider.getValue(),Double.parseDouble(tfAge.getText()), slimness);
-                idealWeight.setText(String.valueOf(finalIdealWeight));
-                    ;
+                double finalBmi= Double.parseDouble(textWeight.getText() ) * 100 * 100 / (jsliderHeight.getValue() * jsliderHeight.getValue());
+                labelBmiResult.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
+                double finalIdealWeight = calculateIdealWeight(jsliderHeight.getValue(),Double.parseDouble(textAge.getText()), slimness);
+                IdealWeightResult.setText(String.valueOf(df.format(finalIdealWeight) ));
             }
         });
 
         ActionListener listener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 Object source = e.getSource();
                 if (source==smallRadioButton) {
-                    slimness = 0.9;
+                    slimness = SMALL_SLIMNESS;
                 }else if (source==mediumRadioButton){
-                    slimness=1;
+                    slimness=MEDIUM_SLIMNESS;
                 }else {
-                    slimness = 1.1;
+                    slimness = LARGE_SLIMNESS;
                 }
                 }
         };
@@ -112,26 +130,24 @@ public class Main extends JFrame {
 
     private String setBmiStatusLabel(double userBmi){
         String userWeightStatus;
-        if (userBmi<15){
+        if (userBmi<ANOREXIC){
             userWeightStatus="Anorexic";
-        } else if (userBmi>=15 && userBmi<18.5){
+        } else if (userBmi>=ANOREXIC && userBmi<UNDER_WEIGHT){
             userWeightStatus="Underweight ";
-        }else if(userBmi>=18.5 && userBmi<24.9){
+        }else if(userBmi>=UNDER_WEIGHT && userBmi<NORMAL){
             userWeightStatus="Normal";
-        }else if (userBmi>=24.9 && userBmi<29.9){
+        }else if (userBmi>=NORMAL && userBmi<OVER_WEIGHT){
             userWeightStatus="Overweight";
-        }else if(userBmi>=30 && userBmi<35){
+        }else if(userBmi>=OBESE && userBmi<EXTRA_OBESE){
             userWeightStatus="Obese";
         }else {
             userWeightStatus="Extreme Obese";
         }
-
         return userWeightStatus;
     }
 
     private double calculateIdealWeight(double userHeight,double userAge,double slimness){
-        return (userHeight-100+(userAge/10))*0.9*slimness;
-
+        return (userHeight-100+(userAge/10))*SMALL_SLIMNESS*slimness;
     }
 
 }
