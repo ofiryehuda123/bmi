@@ -4,6 +4,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main extends JFrame {
     private JPanel mainPanel;
@@ -48,12 +50,14 @@ public class Main extends JFrame {
     public static final double SMALL_SLIMNESS=0.9;
     public static final int MEDIUM_SLIMNESS=1;
     public static final double LARGE_SLIMNESS=1.1;
+    public static final String INVALID_CHARACTERS="[!@#$%&*()_+=|<>?{}\\[\\]~-]";
+    public static final int CONVERSION_CENTIMETER_TO_METER=100;
 
     public static void main(String[] args) {
         try {
             Main myFrame = new Main();
             myFrame.setResizable(false);
-        }catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -81,6 +85,12 @@ public class Main extends JFrame {
                 jsliderHeight.setValue(140);
                 buttonGroupGender.clearSelection();
                 buttonGroup.clearSelection();
+                submitButton.setEnabled(true);
+                clearButton.setEnabled(false);
+                labelBmiResult.setText(null);
+                IdealWeightResult.setText(null);
+                clearButton.setEnabled(false);
+                submitButton.setEnabled(true);
             }
         });
 
@@ -96,10 +106,14 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 DecimalFormat df = new DecimalFormat();
                 df.setMaximumFractionDigits(3);
-                double finalBmi= Double.parseDouble(textWeight.getText() ) * 100 * 100 / (jsliderHeight.getValue() * jsliderHeight.getValue());
-                labelBmiResult.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
-                double finalIdealWeight = calculateIdealWeight(jsliderHeight.getValue(),Double.parseDouble(textAge.getText()), slimness);
-                IdealWeightResult.setText(String.valueOf(df.format(finalIdealWeight) ));
+                double finalIdealWeight = calculateIdealWeight(jsliderHeight.getValue(),textAge, slimness);
+                double finalBmi= calculateBmiResult(jsliderHeight,textWeight);
+                if(checkIfInputValid(finalIdealWeight,finalBmi,jsliderHeight,textAge,textWeight)){
+                    labelBmiResult.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
+                    IdealWeightResult.setText(String.valueOf(df.format(finalIdealWeight) ));
+                }
+                submitButton.setEnabled(false);
+                clearButton.setEnabled(true);
             }
         });
 
@@ -120,12 +134,6 @@ public class Main extends JFrame {
         smallRadioButton.addActionListener(listener);
         largeRadioButton.addActionListener(listener);
         mediumRadioButton.addActionListener(listener);
-        femaleRadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
     }
 
     private String setBmiStatusLabel(double userBmi){
@@ -146,8 +154,51 @@ public class Main extends JFrame {
         return userWeightStatus;
     }
 
-    private double calculateIdealWeight(double userHeight,double userAge,double slimness){
-        return (userHeight-100+(userAge/10))*SMALL_SLIMNESS*slimness;
+    private double calculateIdealWeight(double userHeight,JTextField userAge,double slimness){
+        double idealWeight=0;
+        if (!isValidInput(userAge)){
+            idealWeight= (userHeight-100+(Double.parseDouble(userAge.getText())/10))*0.9*slimness;
+        }
+        return idealWeight;
     }
 
+    //check if age or weight is empty or contain characters
+    private boolean isValidInput(JTextField textField){
+        boolean isValidInput=false;
+        //check for special characters like *, !, etc
+        Pattern special = Pattern.compile (INVALID_CHARACTERS);
+        Matcher hasSpecial = special.matcher(textField.getText());
+        if (textField.getText().isEmpty() || hasSpecial.find()){
+            isValidInput=true;
+        }
+        for (char character:textField.getText().toCharArray()) {
+            if (Character.isAlphabetic(character) ){
+                isValidInput=true;
+                break;
+            }
+        }
+        return isValidInput;
+    }
+
+    private boolean checkIfInputValid(double idealWeightForUser,double finalBmi,JSlider userHeightSlider,JTextField userAge, JTextField userWeightText){
+        //check if ideal or bmi is 0 in this case the user enter something wrong
+        boolean valid=true;
+        if (idealWeightForUser==0 || finalBmi==0) {
+            valid=false;
+            userWeightText.setText(null);
+            userAge.setText(null);
+        }
+        return valid;
+    }
+
+    private double calculateBmiResult(JSlider userHeightSlider,JTextField userWeightText){
+        double realWeight,realHeight,bmi=0;
+        if (!isValidInput(userWeightText)){
+            realWeight=Double.parseDouble(userWeightText.getText());
+            realHeight=userHeightSlider.getValue();
+            //note: due to the fact that the user insert height in cmd we multiplied by 100 to get right bmi
+            bmi=realWeight * CONVERSION_CENTIMETER_TO_METER * CONVERSION_CENTIMETER_TO_METER / (realHeight * realHeight);
+        }
+        return bmi;
+    }
 }
