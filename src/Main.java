@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -35,6 +36,8 @@ public class Main extends JFrame {
     private JLabel titleLabel2;
     private JLabel bodyLabel;
     private JLabel weightLabel;
+    private JLabel warningLabel1;
+    private JLabel warningLabel2;
     private JLabel JLabel;
     private double slimness;
     private ButtonGroup buttonGroupGender = new ButtonGroup();
@@ -67,6 +70,7 @@ public class Main extends JFrame {
         setTitle("BMI calculator");
         setSize(1000  , 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setVisible(true);
         buttonGroupGender.add(maleRadioButton);
         buttonGroupGender.add(femaleRadioButton);
@@ -74,7 +78,7 @@ public class Main extends JFrame {
         buttonGroup.add(mediumRadioButton);
         buttonGroup.add(largeRadioButton);
 
-        //clear
+        //clear listener
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -91,6 +95,8 @@ public class Main extends JFrame {
                 IdealWeightResult.setText(null);
                 clearButton.setEnabled(false);
                 submitButton.setEnabled(true);
+                warningLabel1.setVisible(false);
+                warningLabel2.setVisible(false);
             }
         });
 
@@ -101,6 +107,7 @@ public class Main extends JFrame {
             }
         });
 
+        //submit listener
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,15 +115,25 @@ public class Main extends JFrame {
                 df.setMaximumFractionDigits(3);
                 double finalIdealWeight = calculateIdealWeight(jsliderHeight.getValue(),textAge, slimness);
                 double finalBmi= calculateBmiResult(jsliderHeight,textWeight);
-                if(checkIfInputValid(finalIdealWeight,finalBmi,jsliderHeight,textAge,textWeight)){
+                if (checkIfInputValid(finalIdealWeight,finalBmi,isNameEmpty(textFirstName,textLastName),isGenderButtonPressed(buttonGroupGender)) && slimness!=0){
                     labelBmiResult.setText(df.format(finalBmi) +" "+ setBmiStatusLabel(finalBmi));
                     IdealWeightResult.setText(String.valueOf(df.format(finalIdealWeight) ));
+                } else {
+                    warningLabel1.setVisible(true);
+                    warningLabel2.setVisible(true);
+                    warningLabel1.setText("your input isn't valid,");
+                    warningLabel2.setText("please press clear to reset.");
+                    warningLabel1.setForeground(Color.RED);
+                    warningLabel2.setForeground(Color.RED);
+
                 }
                 submitButton.setEnabled(false);
                 clearButton.setEnabled(true);
+
             }
         });
 
+        // add listener for body
         ActionListener listener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,9 +145,8 @@ public class Main extends JFrame {
                 }else {
                     slimness = LARGE_SLIMNESS;
                 }
-                }
+            }
         };
-
         smallRadioButton.addActionListener(listener);
         largeRadioButton.addActionListener(listener);
         mediumRadioButton.addActionListener(listener);
@@ -180,13 +196,11 @@ public class Main extends JFrame {
         return isValidInput;
     }
 
-    private boolean checkIfInputValid(double idealWeightForUser,double finalBmi,JSlider userHeightSlider,JTextField userAge, JTextField userWeightText){
-        //check if ideal or bmi is 0 in this case the user enter something wrong
+    //check if ideal or bmi is 0 in this case the user enter something wrong
+    private boolean checkIfInputValid(double idealWeightForUser,double finalBmi,boolean isNameEmpty,boolean isGenderPressed){
         boolean valid=true;
-        if (idealWeightForUser==0 || finalBmi==0) {
+        if (idealWeightForUser==0 || finalBmi==0 || isNameEmpty || !isGenderPressed) {
             valid=false;
-            userWeightText.setText(null);
-            userAge.setText(null);
         }
         return valid;
     }
@@ -201,4 +215,25 @@ public class Main extends JFrame {
         }
         return bmi;
     }
+
+    //check if first or last name is empty
+    private boolean isNameEmpty(JTextField firstNameText, JTextField lastNameText){
+        boolean isEmpty=false;
+        if (firstNameText.getText().isEmpty() || lastNameText.getText().isEmpty()){
+            isEmpty=true;
+        }
+
+        return isEmpty;
+    }
+
+    //check if button is pressed
+    private boolean isGenderButtonPressed(ButtonGroup genderButtonGroup){
+        boolean pressed=true;
+
+        if (genderButtonGroup.getSelection()==null){
+            pressed=false;
+        }
+        return pressed;
+    }
+
 }
